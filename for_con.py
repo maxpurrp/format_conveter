@@ -2,11 +2,13 @@ import sys
 import re
 class cif_structure():
     replace_map = {"0.500000":"1/2","0.250000":"1/4","0.750000":"3/4","0.333333":"1/3","0.666667":"2/3","0":"0"}
-    def __init__(self,name,x,y,z) -> None:
+    def __init__(self,name,x,y,z,char) -> None:
         self.name = name
         self.x = x
         self.y = y
         self.z = z
+        self.char = char
+
     def coord_replace(self,coord):
         for key in self.replace_map.keys():
             if float(coord) == float(key):
@@ -18,11 +20,11 @@ class cif_structure():
         self.z = self.coord_replace(self.z)
 
     def selfCheck(self) -> bool:
-        return self.name != None and self.x != None and self.y != None and self.z != None
+        return self.name != None and self.x != None and self.y != None and self.z != None and self.char != None
     def getFormatted(self):
-        return '{"' + self.name + '",{'+ self.x + "," + self.y + "," + self.z + "}}" 
+        return '{"' + self.name + '",{'+ self.x + "," + self.y + "," + self.z + "}," +  self.char + "}" 
     def __repr__(self) -> str:
-        return self.name + " " + self.x + " " + self.y + " " + self.z
+        return self.name + " " + self.x + " " + self.y + " " + self.z + self.char
 
 
 def handle_loop(f,line,cif_list):
@@ -49,12 +51,11 @@ def handle_loop(f,line,cif_list):
     cut = lambda x: x if "(" not in x else x.split("(")[0]
     while len(line) > 4 and not line.startswith("#"): 
         splited = line.split()
-        #print(splited)
-        #print(name_index)
-        #print(x_index)
-        #print(y_index)
-        #print(z_index)
-        
+        if "Uiso" in splited:
+            char = "Uiso"
+        else:
+            if "Uani" in splited:
+                char = "Uiso"
         name = splited[name_index]
         m = re.search(r"\d", name)
         if m:
@@ -62,7 +63,7 @@ def handle_loop(f,line,cif_list):
         x = cut(splited[x_index])
         y = cut(splited[y_index])
         z = cut(splited[z_index])
-        new_atom = cif_structure(name,x,y,z)
+        new_atom = cif_structure(name,x,y,z,char)
         new_atom.selfFraqReplace()
         if not new_atom.selfCheck():
             raise Exception("error cif(" + cif_f + ") file parsing: line error parsing: ", line)
@@ -71,8 +72,8 @@ def handle_loop(f,line,cif_list):
     return True
 if __name__ == "__main__":
     try:
-        cif_f = sys.argv[1]
-        feop = sys.argv[2]
+        cif_f = "wrong_cif.cif"
+        feop = "beb.sym"
     except Exception as e:
         print("Expected: python3", sys.argv[0], "cif_filepath sym_filepath")
         raise
@@ -100,7 +101,7 @@ if __name__ == "__main__":
     print("Converting...")
     try:
         #backup
-        outf = "out_file"
+        outf = "out_file.txt"
         with open(feop) as f:
             with open(outf,"w") as out:
                 line = f.readline()
