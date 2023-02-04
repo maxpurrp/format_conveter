@@ -24,7 +24,7 @@ class cif_structure():
     def getFormatted(self):
         return '{"' + self.name + '",{'+ self.x + "," + self.y + "," + self.z + "}," +  self.char + "}" 
     def __repr__(self) -> str:
-        return self.name + " " + self.x + " " + self.y + " " + self.z + self.char
+        return self.name + " " + self.x + " " + self.y + " " + self.z + " " + self.char
 
 
 def handle_loop(f,line,cif_list):
@@ -46,29 +46,28 @@ def handle_loop(f,line,cif_list):
             y_index = i
         if "_atom_site_fract_z" in lines_map[i]:
             z_index = i
+        if "_atom_site_adp_type" in lines_map[i]:
+            char = i
     if name_index == -1 or x_index == -1 or y_index == -1 or z_index == -1:
         return False
     cut = lambda x: x if "(" not in x else x.split("(")[0]
-    while len(line) > 4 and not line.startswith("#"): 
-        splited = line.split()
-        if "Uiso" in splited:
-            char = "Uiso"
-        else:
-            if "Uani" in splited:
-                char = "Uiso"
-        name = splited[name_index]
-        m = re.search(r"\d", name)
-        if m:
-            name = name[:m.start()]
-        x = cut(splited[x_index])
-        y = cut(splited[y_index])
-        z = cut(splited[z_index])
-        new_atom = cif_structure(name,x,y,z,char)
-        new_atom.selfFraqReplace()
-        if not new_atom.selfCheck():
-            raise Exception("error cif(" + cif_f + ") file parsing: line error parsing: ", line)
-        cif_list.append(new_atom)
-        line = f.readline()
+    while len(line.split()) == 15:
+        if line.split()[char] == "Uani" or line.split()[char] == "Uiso" :
+            splited = line.split()
+            name = splited[name_index]
+            m = re.search(r"\d", name)
+            if m:
+                name = name[:m.start()]
+            x = cut(splited[x_index])
+            y = cut(splited[y_index])
+            z = cut(splited[z_index])
+            new_atom = cif_structure(name,x,y,z,splited[char])
+            new_atom.selfFraqReplace()
+            if not new_atom.selfCheck():
+                raise Exception("error cif(" + cif_f + ") file parsing: line error parsing: ", line)
+            cif_list.append(new_atom)
+            line = f.readline()
+            continue
     return True
 if __name__ == "__main__":
     try:
