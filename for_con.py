@@ -1,4 +1,4 @@
-import sys
+import argparse
 import re
 class cif_structure():
     replace_map = {"0.500000":"1/2","0.250000":"1/4","0.750000":"3/4","0.333333":"1/3","0.666667":"2/3","0":"0"}
@@ -72,10 +72,14 @@ def handle_loop(f,line,cif_list):
     return True
 if __name__ == "__main__":
     try:
-        cif_f = "wrong_cif.cif"
-        feop = "beb.sym"
+        parser = argparse.ArgumentParser()
+        parser.add_argument("cif",default=None)
+        parser.add_argument("sym",default=None)
+        args = parser.parse_args()
+        cif_f = args.cif
+        feop = args.sym
     except Exception as e:
-        print("Expected: python3", sys.argv[0], "cif_filepath sym_filepath")
+        print("Expected: python3 cif_filepath sym_filepath")
         raise
     cif_list =[]
     try:
