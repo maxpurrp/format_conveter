@@ -50,7 +50,7 @@ def handle_loop(f,line,cif_list):
     if name_index == -1 or x_index == -1 or y_index == -1 or z_index == -1:
         return False
     cut = lambda x: x if "(" not in x else x.split("(")[0]
-    while len(line.split()) == 15: 
+    while len(line) > 4 and not line.startswith("#"): 
         splited = line.split()
         if "Uiso" in splited:
             char = "Uiso"
@@ -79,7 +79,7 @@ if __name__ == "__main__":
         args = parser.parse_args()
         print(args)
     except Exception as e:
-        print("Expected: python3 cif_filepath sym_filepath")
+        print("Expected: python3 cif"+ cif_f +")_filepath sym_filepath")
         raise
     cif_list =[]
     try:
