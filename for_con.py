@@ -51,8 +51,7 @@ def handle_loop(f,line,cif_list):
     if name_index == -1 or x_index == -1 or y_index == -1 or z_index == -1:
         return False
     cut = lambda x: x if "(" not in x else x.split("(")[0]
-    while len(line.split()) == 15:
-        if line.split()[char] == "Uani" or line.split()[char] == "Uiso" :
+    while len(line.split()) == len(lines_map):
             splited = line.split()
             name = splited[name_index]
             m = re.search(r"\d", name)
