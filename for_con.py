@@ -1,4 +1,5 @@
 import argparse
+import sys
 import re
 class cif_structure():
     replace_map = {"0.500000":"1/2","0.250000":"1/4","0.750000":"3/4","0.333333":"1/3","0.666667":"2/3","0":"0"}
@@ -49,7 +50,7 @@ def handle_loop(f,line,cif_list):
     if name_index == -1 or x_index == -1 or y_index == -1 or z_index == -1:
         return False
     cut = lambda x: x if "(" not in x else x.split("(")[0]
-    while len(line) > 4 and not line.startswith("#"): 
+    while len(line.split()) == 15: 
         splited = line.split()
         if "Uiso" in splited:
             char = "Uiso"
@@ -66,24 +67,23 @@ def handle_loop(f,line,cif_list):
         new_atom = cif_structure(name,x,y,z,char)
         new_atom.selfFraqReplace()
         if not new_atom.selfCheck():
-            raise Exception("error cif(" + cif_f + ") file parsing: line error parsing: ", line)
+            raise Exception("error cif("  + ") file parsing: line error parsing: ", line)
         cif_list.append(new_atom)
         line = f.readline()
     return True
 if __name__ == "__main__":
     try:
-        parser = argparse.ArgumentParser()
-        parser.add_argument("cif",default=None)
-        parser.add_argument("sym",default=None)
+        parser = argparse.ArgumentParser(description="._.")
+        parser.add_argument("-cif",'--cif_file',choices=["wrong_cif.cif"],required=True)
+        parser.add_argument("-sym","--sym_file",choices=["beb.sym"],required=True)
         args = parser.parse_args()
-        cif_f = args.cif
-        feop = args.sym
+        print(args)
     except Exception as e:
         print("Expected: python3 cif_filepath sym_filepath")
         raise
     cif_list =[]
     try:
-        with open(cif_f) as f:
+        with open(args.cif_file) as f:
             line = f.readline()
             while line:
                 if "loop_" in line:
@@ -94,7 +94,7 @@ if __name__ == "__main__":
                         continue
                 line = f.readline()
             if len(cif_list) == 0:
-                raise Exception("error cif(" + cif_f + ") file parsing: Not found")
+                raise Exception("error cif("") file parsing: Not found")
     except Exception as e:
         print("ERROR!",e)
         raise
@@ -106,7 +106,7 @@ if __name__ == "__main__":
     try:
         #backup
         outf = "out_file.txt"
-        with open(feop) as f:
+        with open(args.sym_file) as f:
             with open(outf,"w") as out:
                 line = f.readline()
                 while line:
