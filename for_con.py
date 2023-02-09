@@ -74,8 +74,8 @@ def handle_loop(f,line,cif_list):
 if __name__ == "__main__":
     try:
         parser = argparse.ArgumentParser(description="._.")
-        parser.add_argument("-cif",'--cif_file',choices=["wrong_cif.cif"],required=True)
-        parser.add_argument("-sym","--sym_file",choices=["beb.sym"],required=True)
+        parser.add_argument("-cif",'--cif_file',required=True)
+        parser.add_argument("-sym","--sym_file",required=True)
         args = parser.parse_args()
         print(args)
     except Exception as e:
