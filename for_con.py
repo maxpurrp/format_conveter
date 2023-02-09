@@ -37,6 +37,7 @@ def handle_loop(f,line,cif_list):
     x_index = -1
     y_index = -1
     z_index = -1
+    char_index = -1
     for i in range(0,len(lines_map)):
         if "_atom_site_type_symbol" in lines_map[i]:
             name_index = i
@@ -48,7 +49,7 @@ def handle_loop(f,line,cif_list):
             z_index = i
         if "_atom_site_adp_type" in lines_map[i]:
             char = i
-    if name_index == -1 or x_index == -1 or y_index == -1 or z_index == -1:
+    if name_index == -1 or x_index == -1 or y_index == -1 or z_index == -1 or char_index == -1:
         return False
     cut = lambda x: x if "(" not in x else x.split("(")[0]
     while len(line.split()) == len(lines_map):
@@ -60,7 +61,7 @@ def handle_loop(f,line,cif_list):
             x = cut(splited[x_index])
             y = cut(splited[y_index])
             z = cut(splited[z_index])
-            new_atom = cif_structure(name,x,y,z,splited[char])
+            new_atom = cif_structure(name,x,y,z,splited[char_index])
             new_atom.selfFraqReplace()
             if not new_atom.selfCheck():
                 raise Exception("error cif(" + cif_f + ") file parsing: line error parsing: ", line)
