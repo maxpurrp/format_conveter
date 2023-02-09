@@ -48,7 +48,7 @@ def handle_loop(f,line,cif_list):
         if "_atom_site_fract_z" in lines_map[i]:
             z_index = i
         if "_atom_site_adp_type" in lines_map[i]:
-            char = i
+            char_index = i
     if name_index == -1 or x_index == -1 or y_index == -1 or z_index == -1 or char_index == -1:
         return False
     cut = lambda x: x if "(" not in x else x.split("(")[0]
