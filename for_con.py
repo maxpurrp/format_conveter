@@ -25,7 +25,7 @@ class cif_structure():
     def getFormatted(self):
         return '{"' + self.name + '",{'+ self.x + "," + self.y + "," + self.z + "}," +  self.char + "}" 
     def __repr__(self) -> str:
-        return self.name + " " + self.x + " " + self.y + " " + self.z + self.char
+        return self.name + " " + self.x + " " + self.y + " " + self.z + " " + self.char
 
 
 def handle_loop(f,line,cif_list):
@@ -68,6 +68,7 @@ def handle_loop(f,line,cif_list):
             raise Exception("error cif("  + ") file parsing: line error parsing: ", line)
         cif_list.append(new_atom)
         line = f.readline()
+        continue
     return True
 if __name__ == "__main__":
     try:
